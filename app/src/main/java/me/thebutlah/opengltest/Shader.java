@@ -20,7 +20,7 @@ public class Shader {
     public final int shaderType;
 
     /**
-     * Creates a new GLSL shader and stores its id. This id can then be used in OpenGL calls to do stuff with it.
+     * Creates a new GLSL shader and stores its id. This id can then be used in OpenGL calls.
      * @param type The type of shader, such as GLES20.GL_VERTEX_SHADER or GLES20.GL_FRAGMENT_SHADER
      * @param shaderCode The code of the shader, with newline characters as appropriate.
      */

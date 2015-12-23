@@ -14,7 +14,7 @@ public class ShaderProgram {
 
     /**
      * Creates a new GLSL shader program by linking together the given shaders and stores the program's id.
-     * This id can then be used in OpenGL calls to do stuff with it.
+     * This id can then be used in OpenGL calls.
      * @param shaders One or more Shader objects to link together into a ShaderProgram
      */
     public ShaderProgram(Shader... shaders ) {
