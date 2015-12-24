@@ -3,6 +3,7 @@ package me.thebutlah.opengltest;
 import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
+import android.opengl.Matrix;
 import android.util.Log;
 
 import java.io.IOException;
@@ -28,6 +29,10 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
             0.5f,  0.0f,  0.0f,  1.0f
     };
 
+    private float[] mvpMatrix = new float[16];
+    private float[] projectionMatrix = new float[16];
+    private float[] viewMatrix = new float[16];
+
     public MyGLRenderer(Context context) {
         this.context = context;
     }
@@ -51,7 +56,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         }
 
         {//Set up VBOs
-            Log.v(MainActivity.LOGGER_TAG, "Initializing VBOs");
             //Represents the vertex data, but stored in a native buffer in RAM. Note that this is not a VBO.
             //vertices.length * 4 because 1 float = 4 bytes
             FloatBuffer nativeVertices = ByteBuffer.allocateDirect(vertices.length * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
@@ -71,7 +75,6 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         }
 
 
-        Log.v(MainActivity.LOGGER_TAG, "Finished setting up VBOs!");
         // Set the background frame color
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     }
@@ -80,6 +83,9 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     public void onDrawFrame(GL10 unused) {
         // Redraw background color
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
+
+        Matrix.setLookAtM(viewMatrix, 0, 0, 0, -3, 0, 0, 0, 0, 1, 0 );
+        Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
 
         //Use the shader program
         GLES20.glUseProgram(shaderProgram.programID);
@@ -94,6 +100,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         //Tell the attribute how the VBO is formatted
         GLES20.glVertexAttribPointer(positionAttrib, 4, GLES20.GL_FLOAT, false, 0, 0);
 
+        int mvpMatrixHandle = GLES20.glGetUniformLocation(shaderProgram.programID, "mMVPMatrix");
+        GLES20.glUniformMatrix4fv(mvpMatrixHandle, 1, false, mvpMatrix, 0);
         //Draw effyching
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertices.length);
 
@@ -106,6 +114,10 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     @Override
     public void onSurfaceChanged(GL10 unused, int width, int height) {
         GLES20.glViewport(0, 0, width, height);
+        float ratio = ((float) width)/height;
+        //Set up the Projection Matrix so that it squishes the scene properly so as to appear correct when phone is rotated.
+        Matrix.frustumM(projectionMatrix, 0, -ratio, ratio, -1, 1, 3f, 7);
+
     }
 
 }
