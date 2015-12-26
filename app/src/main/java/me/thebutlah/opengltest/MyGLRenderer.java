@@ -84,7 +84,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         // Redraw background color
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
-        Matrix.setLookAtM(viewMatrix, 0, 0, 0, -3, 0, 0, 0, 0, 1, 0 );
+        Matrix.setLookAtM(viewMatrix, 0, 0, 0, 2, 0, 0, 0, 0, 1, 0 );
         Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
 
         //Use the shader program
@@ -116,7 +116,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         GLES20.glViewport(0, 0, width, height);
         float ratio = ((float) width)/height;
         //Set up the Projection Matrix so that it squishes the scene properly so as to appear correct when phone is rotated.
-        Matrix.frustumM(projectionMatrix, 0, -ratio, ratio, -1, 1, 3f, 7);
+        Matrix.frustumM(projectionMatrix, 0, -ratio, ratio, -1, 1, 1f, 10);
 
     }
 
