@@ -17,6 +17,7 @@ import javax.microedition.khronos.opengles.GL10;
 
 public class MyGLRenderer implements GLSurfaceView.Renderer {
 
+    private float rotation = 0.0f;
     private final Context context;
 
     private ShaderProgram shaderProgram;
@@ -29,12 +30,15 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
             0.5f,  0.0f,  0.0f,  1.0f
     };
 
+    private final StaticMesh mesh;
+
     private float[] viewProjectionMatrix = new float[16];
     private float[] projectionMatrix = new float[16];
     private float[] viewMatrix = new float[16];
 
     public MyGLRenderer(Context context) {
         this.context = context;
+        mesh = new StaticMesh(vertices);
     }
 
     @Override
@@ -55,7 +59,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
             shaderProgram = new ShaderProgram(basicVertexShader, basicFragmentShader);
         }
 
-        {//Set up VBOs
+        mesh.initialize(shaderProgram);
+        /*{//Set up VBOs
             //Represents the vertex data, but stored in a native buffer in RAM. Note that this is not a VBO.
             //vertices.length * 4 because 1 float = 4 bytes
             FloatBuffer nativeVertices = ByteBuffer.allocateDirect(vertices.length * 4).order(ByteOrder.nativeOrder()).asFloatBuffer();
@@ -72,7 +77,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
             GLES20.glBufferData(GLES20.GL_ARRAY_BUFFER, 4 * nativeVertices.capacity(), nativeVertices, GLES20.GL_STATIC_DRAW);
             //Unbind the VBO. Think of this as setting the VBO that is currently active to null. Future OpenGL calls will now not affect VBO.
             GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER,0);
-        }
+        }*/
 
 
         // Set the background frame color
@@ -87,6 +92,11 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         Matrix.setLookAtM(viewMatrix, 0, 0, 0, 2, 0, 0, 0, 0, 1, 0 );
         Matrix.multiplyMM(viewProjectionMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
 
+        mesh.draw(viewProjectionMatrix);
+        mesh.setRotation(rotation+=1,0,0);
+
+
+        /*
         //Use the shader program
         GLES20.glUseProgram(shaderProgram.programID);
         //Bind the VBO
@@ -109,6 +119,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         GLES20.glDisableVertexAttribArray(positionAttrib);
         //Unbind the VBO, although in this usage case it isnt even necessary.
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
+        */
     }
 
     @Override

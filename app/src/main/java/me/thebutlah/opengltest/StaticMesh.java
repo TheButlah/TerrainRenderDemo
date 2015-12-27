@@ -22,7 +22,7 @@ public class StaticMesh {
 
     private float[] location = {0,0,0};
     private float[] rotation = {0,0,0};
-    private float[] scale = {0,0,0};
+    private float[] scale = {1,1,1};
 
     private boolean matrixNeedsUpdating = false;
     private float[] modelMatrix = new float[16];
@@ -95,7 +95,7 @@ public class StaticMesh {
         float[] mvpMatrix = new float[16];
         Matrix.multiplyMM(mvpMatrix, 0, viewProjectionMatrix, 0, modelMatrix, 0);
 
-
+        GLES20.glUseProgram(program.programID);
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vertexVBOHandle);
         GLES20.glEnableVertexAttribArray(attrib_vPosition);
         GLES20.glVertexAttribPointer(attrib_vPosition, 4, GLES20.GL_FLOAT, false, 0, 0);
