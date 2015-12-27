@@ -27,6 +27,13 @@ public class ShaderProgram {
             GLES20.glAttachShader(programID,shader.shaderID);
         }
         GLES20.glLinkProgram(programID);
+        int[] linkStatus = new int[1];
+        GLES20.glGetProgramiv(programID, GLES20.GL_LINK_STATUS, linkStatus, 0);
+        if (linkStatus[0] != GLES20.GL_TRUE) {
+            String info = GLES20.glGetProgramInfoLog(programID);
+            Log.e(MainActivity.LOGGER_TAG, "Shader program failed to link! Info:\n" + info);
+            System.exit(1);
+        }
     }
 
 }

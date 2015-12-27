@@ -29,6 +29,14 @@ public class Shader {
         shaderID = GLES20.glCreateShader(type);
         GLES20.glShaderSource(shaderID, shaderCode);
         GLES20.glCompileShader(shaderID);
+        int[] compileStatus = new int[1];
+        GLES20.glGetShaderiv(shaderID, GLES20.GL_COMPILE_STATUS, compileStatus, 0);
+        if (compileStatus[0] != GLES20.GL_TRUE) {
+            String info = GLES20.glGetShaderInfoLog(shaderID);
+            Log.e(MainActivity.LOGGER_TAG, "Shader failed to compile! Info:\n" + info);
+            System.exit(1);
+
+        }
     }
 
     /**
