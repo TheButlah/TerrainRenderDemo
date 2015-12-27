@@ -29,7 +29,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
             0.5f,  0.0f,  0.0f,  1.0f
     };
 
-    private float[] mvpMatrix = new float[16];
+    private float[] viewProjectionMatrix = new float[16];
     private float[] projectionMatrix = new float[16];
     private float[] viewMatrix = new float[16];
 
@@ -85,7 +85,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
         Matrix.setLookAtM(viewMatrix, 0, 0, 0, 2, 0, 0, 0, 0, 1, 0 );
-        Matrix.multiplyMM(mvpMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
+        Matrix.multiplyMM(viewProjectionMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
 
         //Use the shader program
         GLES20.glUseProgram(shaderProgram.programID);
@@ -101,7 +101,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         GLES20.glVertexAttribPointer(positionAttrib, 4, GLES20.GL_FLOAT, false, 0, 0);
 
         int mvpMatrixHandle = GLES20.glGetUniformLocation(shaderProgram.programID, "mMVPMatrix");
-        GLES20.glUniformMatrix4fv(mvpMatrixHandle, 1, false, mvpMatrix, 0);
+        GLES20.glUniformMatrix4fv(mvpMatrixHandle, 1, false, viewProjectionMatrix, 0);
         //Draw effyching
         GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertices.length);
 
