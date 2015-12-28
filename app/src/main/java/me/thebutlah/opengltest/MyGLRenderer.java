@@ -27,9 +27,10 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
     private final StaticMesh mesh;
 
+    public final Camera camera = new Camera(0,0,2,0,0,0);
+
     private float[] viewProjectionMatrix = new float[16];
     private float[] projectionMatrix = new float[16];
-    private float[] viewMatrix = new float[16];
 
     public MyGLRenderer(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
@@ -84,11 +85,9 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         // Redraw background color
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
-        Matrix.setLookAtM(viewMatrix, 0, 0, 0, 2, 0, 0, 0, 0, 1, 0);
-        Matrix.multiplyMM(viewProjectionMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
+        Matrix.multiplyMM(viewProjectionMatrix, 0, projectionMatrix, 0, camera.getViewMatrix(), 0);
 
         mesh.draw(viewProjectionMatrix);
-
         /*
         //Use the shader program
         GLES20.glUseProgram(shaderProgram.programID);
