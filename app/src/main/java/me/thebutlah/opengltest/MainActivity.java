@@ -2,6 +2,10 @@ package me.thebutlah.opengltest;
 
 import android.app.Activity;
 import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.opengl.GLSurfaceView;
 import android.util.Log;
@@ -12,6 +16,26 @@ public class MainActivity extends Activity {
 
     public static final String LOGGER_TAG = "OpenGLTest.MainActivity";
     private MyGLSurfaceView glSurfaceView;
+
+    public float[] sensorData;
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        SensorManager sman = (SensorManager) getSystemService(SENSOR_SERVICE);
+        sman.registerListener(new SensorEventListener() {
+
+            @Override
+            public void onSensorChanged(SensorEvent event) {
+                sensorData = event.values;
+            }
+
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+            }
+        }, sman.getDefaultSensor(Sensor.TYPE_GYROSCOPE), SensorManager.SENSOR_DELAY_UI);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
