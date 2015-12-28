@@ -1,6 +1,5 @@
 package me.thebutlah.opengltest;
 
-import android.content.Context;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
@@ -8,17 +7,13 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 public class MyGLRenderer implements GLSurfaceView.Renderer {
 
-    private float rotation = 0.0f;
-    private final Context context;
+    private final MainActivity mainActivity;
 
     private ShaderProgram shaderProgram;
     //an array is used for two reasons: because there can be more than one buffer if desired, and because arrays are pass by reference
@@ -36,8 +31,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     private float[] projectionMatrix = new float[16];
     private float[] viewMatrix = new float[16];
 
-    public MyGLRenderer(Context context) {
-        this.context = context;
+    public MyGLRenderer(MainActivity mainActivity) {
+        this.mainActivity = mainActivity;
         mesh = new StaticMesh(vertices);
     }
 
@@ -46,9 +41,9 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         Log.v(MainActivity.LOGGER_TAG,"me.thebutlah.opengltest.MyGLRenderer.onSurfaceCreated() called!");
 
         {//Initialize Shaders
-            InputStream basicVertexShaderStream = context.getResources().openRawResource(R.raw.basic_vertexshader);
+            InputStream basicVertexShaderStream = mainActivity.getResources().openRawResource(R.raw.basic_vertexshader);
             Shader basicVertexShader = new Shader(GLES20.GL_VERTEX_SHADER, basicVertexShaderStream);
-            InputStream basicFragmentShaderStream = context.getResources().openRawResource(R.raw.basic_fragmentshader);
+            InputStream basicFragmentShaderStream = mainActivity.getResources().openRawResource(R.raw.basic_fragmentshader);
             Shader basicFragmentShader = new Shader(GLES20.GL_FRAGMENT_SHADER, basicFragmentShaderStream);
             try {
                 basicVertexShaderStream.close();
@@ -89,12 +84,10 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         // Redraw background color
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
-        Matrix.setLookAtM(viewMatrix, 0, 0, 0, 2, 0, 0, 0, 0, 1, 0 );
+        Matrix.setLookAtM(viewMatrix, 0, 0, 0, 2, 0, 0, 0, 0, 1, 0);
         Matrix.multiplyMM(viewProjectionMatrix, 0, projectionMatrix, 0, viewMatrix, 0);
 
         mesh.draw(viewProjectionMatrix);
-        mesh.setRotation(rotation+=1,0,0);
-
 
         /*
         //Use the shader program
