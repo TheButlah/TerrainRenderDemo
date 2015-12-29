@@ -11,6 +11,8 @@ import java.io.InputStream;
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
+import me.thebutlah.perlinnoise.PerlinNoise;
+
 public class MyGLRenderer implements GLSurfaceView.Renderer {
 
     private final MainActivity mainActivity;
@@ -19,26 +21,45 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     //an array is used for two reasons: because there can be more than one buffer if desired, and because arrays are pass by reference
     private final int[] vboHandle = new int[1];
 
-    private final float[] vertices = {
+    /*private final float[] vertices = {
             0.0f,  0.5f,  0.0f,  1.0f, //each line represents (x,y,z,w) of a single vertex. This, for example, is the top of the triangle
             -0.5f,  0.0f,  0.0f,  1.0f,
             0.5f,  0.0f,  0.0f,  1.0f
-    };
+    };*/
+    private final float[] vertices;
 
     private final StaticMesh mesh;
 
-    public final Camera camera = new Camera(0,0,2,0,0,0);
+    public final Camera camera = new Camera(1,2,-1,0,0,0);
 
     private float[] viewProjectionMatrix = new float[16];
     private float[] projectionMatrix = new float[16];
 
     public MyGLRenderer(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
+        PerlinNoise pgen = new PerlinNoise(1337l);
+        vertices = new float[3*100*100];
+        for (int y=0; y<100 - 1; y++){
+            for (int x=0; x<50; x++) {
+                setVertex((x*2), (y), vertices, pgen);
+                setVertex((x*2), (y+1), vertices, pgen);
+                setVertex((x*2+1), (y), vertices, pgen);
+                setVertex((x*2+1), (y+1), vertices, pgen);
+            }
+        }
         mesh = new StaticMesh(vertices);
+        mesh.setScale(.1f,.1f,.1f);
+    }
+
+    private static void setVertex(int x, int y, float[] vertices, PerlinNoise pgen) {
+        vertices[3*(y*100+x)] = x;
+        vertices[3*(y*100+x)+1] = (float) (.05*pgen.perlinNoise2D(x/100.0, y/100.0,6, 2, .5));
+        vertices[3*(y*100+x)+2] = y;
     }
 
     @Override
     public void onSurfaceCreated(GL10 unused, EGLConfig config) {
+        GLES20.glEnable(GLES20.GL_DEPTH_TEST);
         Log.v(MainActivity.LOGGER_TAG,"me.thebutlah.opengltest.MyGLRenderer.onSurfaceCreated() called!");
 
         {//Initialize Shaders

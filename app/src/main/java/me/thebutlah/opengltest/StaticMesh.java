@@ -78,10 +78,6 @@ public class StaticMesh {
         matrixNeedsUpdating = true;
     }
 
-
-
-
-
     public void draw(float[] viewProjectionMatrix) {
         if (matrixNeedsUpdating) {
             Matrix.setIdentityM(modelMatrix, 0);
@@ -98,9 +94,9 @@ public class StaticMesh {
         GLES20.glUseProgram(program.programID);
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, vertexVBOHandle);
         GLES20.glEnableVertexAttribArray(attrib_vPosition);
-        GLES20.glVertexAttribPointer(attrib_vPosition, 4, GLES20.GL_FLOAT, false, 0, 0);
+        GLES20.glVertexAttribPointer(attrib_vPosition, 3, GLES20.GL_FLOAT, false, 0, 0);
         GLES20.glUniformMatrix4fv(uniform_mMVPMatrix, 1, false, mvpMatrix, 0);
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, numVertices);
+        GLES20.glDrawArrays(GLES20.GL_TRIANGLE_STRIP, 0, numVertices);
         GLES20.glDisableVertexAttribArray(attrib_vPosition);
         GLES20.glBindBuffer(GLES20.GL_ARRAY_BUFFER, 0);
 
