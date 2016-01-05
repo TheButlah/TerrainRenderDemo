@@ -21,16 +21,21 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     //an array is used for two reasons: because there can be more than one buffer if desired, and because arrays are pass by reference
     private final int[] vboHandle = new int[1];
 
-    /*private final float[] vertices = {
-            0.0f,  0.5f,  0.0f,  1.0f, //each line represents (x,y,z,w) of a single vertex. This, for example, is the top of the triangle
-            -0.5f,  0.0f,  0.0f,  1.0f,
-            0.5f,  0.0f,  0.0f,  1.0f
-    };*/
     private final float[] vertices;
+    private final int[] indices;
+    /*private final float[] vertices = {
+             0.0f,  0.5f,  0.0f, //each line represents (x,y,z) of a single vertex. This, for example, is the top of the triangle
+            -0.5f,  0.0f,  0.0f,
+             0.5f,  0.0f,  0.0f,
+    };*/
+
+    /*private final int[] indices = {
+            0, 1, 2
+    };*/
 
     private final StaticMesh mesh;
 
-    public final Camera camera = new Camera(1,2,-1,0,0,0);
+    public final Camera camera = new Camera(50,4,50,-45,135,0);
 
     private float[] viewProjectionMatrix = new float[16];
     private float[] projectionMatrix = new float[16];
@@ -39,23 +44,39 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         this.mainActivity = mainActivity;
         PerlinNoise pgen = new PerlinNoise(1337l);
         vertices = new float[3*100*100];
-        for (int y=0; y<100 - 1; y++){
-            for (int x=0; x<50; x++) {
-                setVertex((x*2), (y), vertices, pgen);
-                setVertex((x*2), (y+1), vertices, pgen);
-                setVertex((x*2+1), (y), vertices, pgen);
-                setVertex((x*2+1), (y+1), vertices, pgen);
+        for (int z=0; z<100; z++){
+            for (int x=0; x<100; x++) {
+                vertices[3*(z*100+x)    ] = x;
+                vertices[3*(z*100+x) + 1] = getHeight(x,z,pgen);
+                vertices[3*(z*100+x) + 2] = z;
             }
         }
-        mesh = new StaticMesh(vertices);
-        mesh.setScale(.1f,.1f,.1f);
+        indices = new int[2*(99*100 + 98)];
+        int counter = 0;
+        for (int z=0; z<99; z++) {
+            for (int x=0; x<100; x++) {
+                indices[counter++] = z*100 + x;
+                indices[counter++] = (z+1)*100 + x;
+            }
+            if (z != 98) {
+                indices[counter++] = (z+1)*100 + 99;
+                indices[counter++] = (z+2)*100;
+            }
+        }
+        mesh = new StaticMesh(vertices, indices);
+        //mesh.setScale(.1f,.1f,.1f);
+
     }
 
-    private static void setVertex(int x, int y, float[] vertices, PerlinNoise pgen) {
-        vertices[3*(y*100+x)] = x;
-        vertices[3*(y*100+x)+1] = (float) (.05*pgen.perlinNoise2D(x/100.0, y/100.0,6, 2, .5));
-        vertices[3*(y*100+x)+2] = y;
+    private static float getHeight(int x, int z, PerlinNoise pgen) {
+        return (float) (20*pgen.perlinNoise2D(x/100.0, z/100.0,6, 2, .5));
     }
+
+    /*private static void setVertex(int x, int y, float height, float[] vertices) {
+        vertices[3*(y*100+x)] = x;
+        vertices[3*(y*100+x)+1] = height;
+        vertices[3*(y*100+x)+2] = y;
+    }*/
 
     @Override
     public void onSurfaceCreated(GL10 unused, EGLConfig config) {
@@ -140,7 +161,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         GLES20.glViewport(0, 0, width, height);
         float ratio = ((float) width)/height;
         //Set up the Projection Matrix so that it squishes the scene properly so as to appear correct when phone is rotated.
-        Matrix.frustumM(projectionMatrix, 0, -ratio, ratio, -1, 1, 1f, 10);
+        Matrix.frustumM(projectionMatrix, 0, -ratio, ratio, -1, 1, 1f, 20);
 
     }
 
