@@ -35,7 +35,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
     private final StaticMesh mesh;
 
-    public final Camera camera = new Camera(50,4,50,-45,135,0);
+    public final Camera camera = new Camera(50,40,50,-45,135,0);
 
     private float[] viewProjectionMatrix = new float[16];
     private float[] projectionMatrix = new float[16];
@@ -60,16 +60,16 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
             }
             if (z != 98) {
                 indices[counter++] = (z+1)*100 + 99;
-                indices[counter++] = (z+2)*100;
+                indices[counter++] = (z+1)*100;
             }
         }
         mesh = new StaticMesh(vertices, indices);
-        //mesh.setScale(.1f,.1f,.1f);
+        //mesh.setScale(.5f,.5f,.5f);
 
     }
 
     private static float getHeight(int x, int z, PerlinNoise pgen) {
-        return (float) (20*pgen.perlinNoise2D(x/100.0, z/100.0,6, 2, .5));
+        return (float) (20*(pgen.perlinNoise2D(x/50.0, z/50.0,6, 2, .5)+1));
     }
 
     /*private static void setVertex(int x, int y, float height, float[] vertices) {
@@ -161,7 +161,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
         GLES20.glViewport(0, 0, width, height);
         float ratio = ((float) width)/height;
         //Set up the Projection Matrix so that it squishes the scene properly so as to appear correct when phone is rotated.
-        Matrix.frustumM(projectionMatrix, 0, -ratio, ratio, -1, 1, 1f, 20);
+        Matrix.frustumM(projectionMatrix, 0, -ratio, ratio, -1, 1, 1f, 75);
 
     }
 
