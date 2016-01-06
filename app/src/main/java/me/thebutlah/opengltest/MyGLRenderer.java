@@ -1,7 +1,10 @@
 package me.thebutlah.opengltest;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
+import android.opengl.GLUtils;
 import android.opengl.Matrix;
 import android.util.Log;
 
@@ -19,10 +22,12 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
     private ShaderProgram shaderProgram;
     //an array is used for two reasons: because there can be more than one buffer if desired, and because arrays are pass by reference
-    private final int[] vboHandle = new int[1];
+    //private final int[] vboHandle = new int[1];
 
-    private final float[] vertices;
+    private final float[] vertexData;
     private final int[] indices;
+    private final Bitmap texture;
+    //private final byte[] textureData = new byte[2048*2048*3]; //16x16 texture with RGB values per texel
     /*private final float[] vertices = {
              0.0f,  0.5f,  0.0f, //each line represents (x,y,z) of a single vertex. This, for example, is the top of the triangle
             -0.5f,  0.0f,  0.0f,
@@ -43,27 +48,51 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     public MyGLRenderer(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
         PerlinNoise pgen = new PerlinNoise(1337l);
-        vertices = new float[3*100*100];
-        for (int z=0; z<100; z++){
-            for (int x=0; x<100; x++) {
-                vertices[3*(z*100+x)    ] = x;
-                vertices[3*(z*100+x) + 1] = getHeight(x,z,pgen);
-                vertices[3*(z*100+x) + 2] = z;
+        {//Generate the texture
+            //InputStream textureStream = mainActivity.getResources().openRawResource(R.raw.)
+            this.texture = BitmapFactory.decodeResource(mainActivity.getResources(),R.drawable.forest_texture);
+            /*int position = 0;
+            for (int v=0;v<2048;v++){
+                for (int u=0;u<2048;u++) {
+                    byte brightness = (byte) ((u+v)*8);
+                    //byte brightness = (byte) 255;
+                    textureData[position++] = 50;   //r
+                    textureData[position++] = (byte) (128*( pgen.perlinNoise2D(u/50.0, v/50.0, 6, 2, .5)+1 ));   //g
+                    textureData[position++] = 50;   //b
+                }
+            }*/
+        }
+        {//populate the vertex data
+            vertexData = new float[(3+2)*100*100];
+            int position = 0;
+            for (int z=0; z<100; z++){
+                for (int x=0; x<100; x++) {
+                    vertexData[position++] = x;                     //x
+                    vertexData[position++] = getHeight(x,z,pgen);   //y
+                    vertexData[position++] = z;                     //z
+                    vertexData[position++] = x*0.1f;               //u
+                    vertexData[position++] = z*0.1f;               //v
+                }
             }
         }
-        indices = new int[2*(99*100 + 98)];
-        int counter = 0;
-        for (int z=0; z<99; z++) {
-            for (int x=0; x<100; x++) {
-                indices[counter++] = z*100 + x;
-                indices[counter++] = (z+1)*100 + x;
-            }
-            if (z != 98) {
-                indices[counter++] = (z+1)*100 + 99;
-                indices[counter++] = (z+1)*100;
+        {//Populate the indices
+            indices = new int[2*(99*100 + 98)];
+            int position = 0;
+            for (int z=0; z<99; z++) {
+                for (int x=0; x<100; x++) {
+                    indices[position++] = z*100 + x;
+                    indices[position++] = (z+1)*100 + x;
+                }
+                if (z != 98) {
+                    indices[position++] = (z+1)*100 + 99;
+                    indices[position++] = (z+1)*100;
+                }
             }
         }
-        mesh = new StaticMesh(vertices, indices);
+
+
+
+        mesh = new StaticMesh(vertexData, texture, indices);
         //mesh.setScale(.5f,.5f,.5f);
 
     }
