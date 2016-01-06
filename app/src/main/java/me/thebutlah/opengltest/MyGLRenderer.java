@@ -40,7 +40,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
     private final StaticMesh mesh;
 
-    public final Camera camera = new Camera(50,40,50,-45,135,0);
+    public final Camera camera = new Camera(50,30,50,-45,135,0);
 
     private float[] viewProjectionMatrix = new float[16];
     private float[] projectionMatrix = new float[16];
@@ -70,8 +70,8 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
                     vertexData[position++] = x;                     //x
                     vertexData[position++] = getHeight(x,z,pgen);   //y
                     vertexData[position++] = z;                     //z
-                    vertexData[position++] = x*0.1f;               //u
-                    vertexData[position++] = z*0.1f;               //v
+                    vertexData[position++] = x*0.05f;               //u
+                    vertexData[position++] = z*0.05f;               //v
                 }
             }
         }
@@ -98,7 +98,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
     }
 
     private static float getHeight(int x, int z, PerlinNoise pgen) {
-        return (float) (20*(pgen.perlinNoise2D(x/50.0, z/50.0,6, 2, .5)+1));
+        return (float) (20*(pgen.perlinNoise2D(x/25.0, z/25.0,6, 2, .5)+1));
     }
 
     /*private static void setVertex(int x, int y, float height, float[] vertices) {
