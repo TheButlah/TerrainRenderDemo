@@ -47,7 +47,7 @@ public class MyGLRenderer implements GLSurfaceView.Renderer {
 
     public MyGLRenderer(MainActivity mainActivity) {
         this.mainActivity = mainActivity;
-        PerlinNoise pgen = new PerlinNoise();
+        PerlinNoise pgen = new PerlinNoise(null);
         {//Generate the texture
             //InputStream textureStream = mainActivity.getResources().openRawResource(R.raw.)
             this.texture = BitmapFactory.decodeResource(mainActivity.getResources(),R.drawable.forest_texture);
